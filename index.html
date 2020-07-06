@@ -1,40 +1,258 @@
-<!doctype html>
+<<!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
 
-		<title>reveal.js</title>
+    <title>Creating Northgard Lore Planner</title>
 
-		<link rel="stylesheet" href="dist/reset.css">
-		<link rel="stylesheet" href="dist/reveal.css">
-		<link rel="stylesheet" href="dist/theme/black.css" id="theme">
+    <link rel="stylesheet" href="dist/reset.css" />
+    <link rel="stylesheet" href="dist/reveal.css" />
+    <link rel="stylesheet" href="dist/theme/moon.css" id="theme" />
 
-		<!-- Theme used for syntax highlighted code -->
-		<link rel="stylesheet" href="plugin/highlight/monokai.css" id="highlight-theme">
-	</head>
-	<body>
-		<div class="reveal">
-			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
-			</div>
-		</div>
+    <!-- Theme used for syntax highlighted code -->
+    <link
+      rel="stylesheet"
+      href="plugin/highlight/monokai.css"
+      id="highlight-theme"
+    />
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <div style="float: left; width: 70%;">
+            <h3>Gunning For The Gold</h3>
+            <p class="fragment">An Attempt To Feel Validated On The Internet</p>
+            <div class="fragment">
+              <p style="color: limegreen;">
+                ...and an introduction to Node Web Scraping
+              </p>
+              <img
+                data-src="./images/node-scraping.jpg"
+                style="height: 20vh;"
+              />
+            </div>
+          </div>
+          <img
+            data-src="./images/reddit-gold.png"
+            style="float: right; width: 30%;"
+          />
+        </section>
+        <section>
+          <h4>I started playing an RTS game called Northgard</h4>
+          <img data-src="./images/clans.jpg" style="float: left; width: 50%;" />
+          <img
+            data-src="./images/splash.jpg"
+            style="float: right; width: 45%;"
+          />
+          <img
+            data-src="./images/screenshot0.png"
+            style="float: right; width: 45%;"
+          />
+        </section>
+        <section>
+          <h3>
+            Northgard
+            <a href="https://northgard.gamepedia.com/Eikthyrnir" target="_blank"
+              >Lore</a
+            >
+          </h3>
+          <div>
+            <p style="float: left; width: 45%;">
+              Lore is a resource that can be assimilated to research. It stacks
+              up as the game goes on and allows players to unlock knowledges
+              from the Lore Tree.
+            </p>
+            <img
+              data-src="./images/lore-example.webp"
+              style="float: right; width: 45%;"
+            />
+          </div>
+        </section>
+        <section>
+          <h3>
+            Problem: Discussing Lore Tech Trees
+          </h3>
+          <div>
+            <div style="float: left; width: 50%;">
+              <p style="font-size: 1.6rem; margin-bottom: 16px;">
+                What build do you recommend for Stag?
+              </p>
+              <ul>
+                <li
+                  class="fragment"
+                  style="font-size: 1.6rem; margin-bottom: 12px;"
+                >
+                  Sharp Axes, Colonization, Eradication, The Bottom Row One
+                  Which Looks Like Coins, ...
+                </li>
+                <li
+                  class="fragment"
+                  style="font-size: 1rem; margin-bottom: 12px;"
+                >
+                  First row until Eradication, Third Row Until The Value of
+                  Great Deeds, then back to First Row...
+                </li>
+                <li class="fragment">Top, Top, Bottom, Mid, ...</li>
+              </ul>
+            </div>
+            <img
+              class="fragment"
+              data-src="./images/what.gif"
+              style="float: right; width: 50%;"
+            />
+          </div>
+        </section>
+        <section>
+          <h3>Solution: Shareable Interactive Web App</h3>
+          <p>How fast can I make it?</p>
+        </section>
+        <section>
+          <h4>Keeping it simple: Avoiding a database</h4>
+          <a style="font-size: 0.5em;">
+            https://northgard-lore-planner.netlify.app/Stag/0001020311
+          </a>
+          <img data-src="./images/encode.png" />
+          <p class="fragment" style="color: yellow;">
+            Store entire state in URL
+          </p>
+        </section>
+        <section>
+          <h3>How to populate information?</h3>
+          <p style="font-size: 0.5em;">
+            Convince an enthusiastic friend to download all image assets for you
+          </p>
+          <img data-src="./images/enthusiasm.png" />
+        </section>
+        <section>
+          <div style="float: left; width: 45%;">
+            <h4>How to populate all descriptions?</h4>
+            <p style="font-size: 0.5em;">
+              These are the lores for 1 clan.
+            </p>
+            <div class="fragment">
+              <p style="color: limegreen;">
+                Solution: Write a web scraper
+              </p>
+              <img data-src="./images/cheerio.jpg" />
+            </div>
+          </div>
+          <img
+            data-src="./images/stag-lores.png"
+            style="float: right; width: 45%;"
+          />
+        </section>
+        <section>
+          <h3 data-id="code-title">Scraper Packages</h3>
+          <pre><code data-trim>
+const fs = require("fs"); // Input output
+const request = require("request"); // Download html
+const cheerio = require("cheerio"); // Manipulate html
+					</code></pre>
+        </section>
+        <section data-auto-animate>
+          <h3 data-id="code-title">Scraper Logic</h3>
+          <pre style="font-size: 1rem;"><code data-line-numbers="1-2" data-trim>
+request(
+  "https://northgard.gamepedia.com/Eikthyrnir",
+  (error, response, body) => {
+    const $ = cheerio.load(body);
+    $("p.tooltip").each((i, elem) => {
+      const lore = $(elem).find("div.desc > span").text();
+      const description = $(elem).find("div.desc > p.tooltip").text();
+      loreDescriptions[lore] = description;
+    });
+  }
+);
+fs.writeFileSync(
+  `../descriptions/lores.json`,
+  JSON.stringify(loreDescriptions)
+);
+          </code></pre>
+        </section>
+        <section data-auto-animate>
+          <h3 data-id="code-title">Scraper Logic</h3>
+          <pre style="font-size: 1rem;"><code data-line-numbers="4-8" data-trim>
+request(
+  "https://northgard.gamepedia.com/Eikthyrnir",
+  (error, response, body) => {
+    const $ = cheerio.load(body);
+    $("p.tooltip").each((i, elem) => {
+      const lore = $(elem).find("div.desc > span").text();
+      const description = $(elem).find("div.desc > p.tooltip").text();
+      loreDescriptions[lore] = description;
+    });
+  }
+);
+fs.writeFileSync(
+  `../descriptions/lores.json`,
+  JSON.stringify(loreDescriptions)
+);
+          </code></pre>
+          <img data-src="./images/tree.png" />
+        </section>
+        <section data-auto-animate>
+          <div style="float: left; width: 70%;">
+            <h3 data-id="code-title">Scraper Logic</h3>
+            <pre
+              style="float: left; font-size: 1rem;"
+            ><code data-line-numbers="12-15" data-trim>
+request(
+  "https://northgard.gamepedia.com/Eikthyrnir",
+  (error, response, body) => {
+    const $ = cheerio.load(body);
+    $("p.tooltip").each((i, elem) => {
+      const lore = $(elem).find("div.desc > span").text();
+      const description = $(elem).find("div.desc > p.tooltip").text();
+      loreDescriptions[lore] = description;
+    });
+  }
+);
+fs.writeFileSync(
+  `../descriptions/lores.json`,
+  JSON.stringify(loreDescriptions)
+);
+          </code></pre>
+            <p>VIOLA!</p>
+          </div>
+          <img data-src="./images/lores.png" />
+        </section>
+        <section>
+          <h3>Used All Over The World</h3>
+          <div>
+            <ul style="float: left; width: 60%;">
+              <li>1.5 weeks of work</li>
+              <li>Hosted free on Netlify</li>
+              <li>Frequently linked on Reddit and Discord</li>
+              <li>~20 views a day</li>
+              <li>No Reddit Gold =(</li>
+            </ul>
+            <img data-src="./images/usage.png" style="float: right;" />
+          </div>
+        </section>
+      </div>
+    </div>
 
-		<script src="dist/reveal.js"></script>
-		<script src="plugin/notes/notes.js"></script>
-		<script src="plugin/markdown/markdown.js"></script>
-		<script src="plugin/highlight/highlight.js"></script>
-		<script>
-			// More info about initialization & config:
-			// - https://revealjs.com/initialization/
-			// - https://revealjs.com/config/
-			Reveal.initialize({
-				hash: true,
+    <script src="dist/reveal.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="plugin/markdown/markdown.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        hash: true,
 
-				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
-			});
-		</script>
-	</body>
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
+        slideNumber: true,
+      });
+    </script>
+  </body>
 </html>
+>
